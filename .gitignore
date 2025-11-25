@@ -1,0 +1,82 @@
+# .gitignore for C# Multi-Agent Learning Project
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio cache/options directory
+.vs/
+
+## Visual Studio Code
+.vscode/
+*.code-workspace
+
+## Rider
+.idea/
+
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Build Results of an ATL Project
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+
+## NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+## Test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+## Environment variables and secrets
+*.env
+.env.local
+appsettings.Development.json
+secrets.json
+
+## OS Files
+.DS_Store
+Thumbs.db
+
+## Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+
+## Documentation build outputs
+_site/
+*.azurePubxml
+
+## Local History
+.localhistory/
+
+## BeatPulse healthcheck temp database
+healthchecksdb
+
+## Backup folder for Package Reference Convert tool in Visual Studio 2017
+MigrationBackup/
+
+## Ionide (cross platform F# VS Code tools) working folder
+.ionide/

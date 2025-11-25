@@ -1,0 +1,279 @@
+﻿<Window x:Class="MultiAgentLearning.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MultiAgentLearning.UI"
+        xmlns:vm="clr-namespace:MultiAgentLearning.UI.ViewModels"
+        xmlns:models="clr-namespace:MultiAgentLearning.UI.Models"
+        xmlns:converters="clr-namespace:MultiAgentLearning.UI.Converters"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
+        Title="Multi-Agent Learning System" 
+        Height="800" 
+        Width="1000"
+        MinHeight="600"
+        MinWidth="800"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource PrimaryBackgroundBrush}">
+
+    <Window.Resources>
+        <!-- Merge application styles -->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Styles/AppStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters -->
+            <converters:StatusToColorConverter x:Key="StatusToColorConverter"/>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+            <converters:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- Orchestration Pattern -->
+            <RowDefinition Height="Auto"/>  <!-- Question Input -->
+            <RowDefinition Height="Auto"/>  <!-- Agent Processing -->
+            <RowDefinition Height="*"/>     <!-- Results -->
+            <RowDefinition Height="Auto"/>  <!-- Status Bar -->
+        </Grid.RowDefinitions>
+
+        <!-- Orchestration Pattern Selector -->
+        <GroupBox Grid.Row="0" Header="Orchestration Pattern">
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Content="Sequential" 
+                           IsChecked="{Binding SelectedOrchestrationMode, 
+                                      Converter={StaticResource EnumToBoolConverter}, 
+                                      ConverterParameter=Sequential}"
+                           IsEnabled="{Binding IsProcessing, 
+                                      Converter={StaticResource InverseBoolConverter}}"
+                           FontSize="14"
+                           VerticalAlignment="Center"
+                           Margin="0,0,20,0"/>
+                
+                <RadioButton Content="Concurrent" 
+                           IsChecked="{Binding SelectedOrchestrationMode, 
+                                      Converter={StaticResource EnumToBoolConverter}, 
+                                      ConverterParameter=Concurrent}"
+                           IsEnabled="{Binding IsProcessing, 
+                                      Converter={StaticResource InverseBoolConverter}}"
+                           FontSize="14"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Question Input Area -->
+        <GroupBox Grid.Row="1" Header="Your Question">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Multi-line TextBox with placeholder -->
+                <TextBox Grid.Row="0"
+                       Text="{Binding QuestionText, UpdateSourceTrigger=PropertyChanged}"
+                       AcceptsReturn="True"
+                       TextWrapping="Wrap"
+                       VerticalScrollBarVisibility="Auto"
+                       Height="100"
+                       IsEnabled="{Binding IsProcessing, 
+                                  Converter={StaticResource InverseBoolConverter}}">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <VisualBrush Stretch="None" AlignmentX="Left" AlignmentY="Top">
+                                                <VisualBrush.Visual>
+                                                    <TextBlock Text="Enter your question or prompt..." 
+                                                             Foreground="{StaticResource TextSecondaryBrush}"
+                                                             FontStyle="Italic"
+                                                             Margin="8,4,0,0"/>
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <!-- Ask Button -->
+                <Button Grid.Row="1"
+                      Command="{Binding AskQuestionCommand}"
+                      HorizontalAlignment="Right"
+                      Margin="0,8,0,0"
+                      MinWidth="150">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                            <Setter Property="Content" Value="Ask Question"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsProcessing}" Value="True">
+                                    <Setter Property="Content" Value="Processing..."/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </GroupBox>
+
+        <!-- Agent Processing Panel -->
+        <GroupBox Grid.Row="2" Header="Agent Processing">
+            <ItemsControl ItemsSource="{Binding AgentStatuses}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Agent Name and Status -->
+                            <StackPanel Grid.Row="0" Grid.Column="0" 
+                                      Orientation="Horizontal">
+                                <Ellipse Width="10" Height="10" 
+                                       Fill="{Binding Status, 
+                                             Converter={StaticResource StatusToColorConverter}}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"/>
+                                <TextBlock Text="{Binding AgentName}" 
+                                         FontWeight="SemiBold"
+                                         FontSize="14"
+                                         VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Status Text -->
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                     Text="{Binding StatusText}"
+                                     Foreground="{StaticResource TextSecondaryBrush}"
+                                     FontSize="12"
+                                     VerticalAlignment="Center"
+                                     Margin="8,0,0,0"/>
+
+                            <!-- Progress Bar -->
+                            <ProgressBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Value="{Binding Progress}"
+                                       Maximum="100"
+                                       Margin="0,4,0,0">
+                                <ProgressBar.Style>
+                                    <Style TargetType="ProgressBar" BasedOn="{StaticResource {x:Type ProgressBar}}">
+                                        <Style.Triggers>
+                                            <!-- Indeterminate when processing -->
+                                            <DataTrigger Binding="{Binding Status}" 
+                                                       Value="{x:Static models:AgentStatus.Processing}">
+                                                <Setter Property="IsIndeterminate" Value="True"/>
+                                            </DataTrigger>
+                                            <!-- Green when completed -->
+                                            <DataTrigger Binding="{Binding Status}" 
+                                                       Value="{x:Static models:AgentStatus.Completed}">
+                                                <Setter Property="Foreground" 
+                                                      Value="{StaticResource SuccessBrush}"/>
+                                            </DataTrigger>
+                                            <!-- Red when error -->
+                                            <DataTrigger Binding="{Binding Status}" 
+                                                       Value="{x:Static models:AgentStatus.Error}">
+                                                <Setter Property="Foreground" 
+                                                      Value="{StaticResource ErrorBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ProgressBar.Style>
+                            </ProgressBar>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </GroupBox>
+
+        <!-- Results Display Area -->
+        <GroupBox Grid.Row="3" Header="Results" Margin="0,0,0,8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Results TextBox -->
+                <Border Grid.Row="0" 
+                      BorderBrush="{StaticResource BorderBrush}"
+                      BorderThickness="1"
+                      Background="{StaticResource SecondaryBackgroundBrush}"
+                      Padding="8">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <TextBox Text="{Binding ResultText, Mode=OneWay}"
+                               IsReadOnly="True"
+                               TextWrapping="Wrap"
+                               BorderThickness="0"
+                               Background="Transparent"
+                               FontFamily="Consolas"
+                               FontSize="12"/>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- Action Buttons -->
+                <StackPanel Grid.Row="1" 
+                          Orientation="Horizontal" 
+                          HorizontalAlignment="Right"
+                          Margin="0,8,0,0">
+                    <Button Content="Copy to Clipboard"
+                          Command="{Binding CopyResultsCommand}"
+                          Margin="0,0,8,0"
+                          Padding="12,6">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Background" Value="{StaticResource SecondaryBackgroundBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Content="Clear"
+                          Command="{Binding ClearResultsCommand}"
+                          Padding="12,6">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Background" Value="{StaticResource SecondaryBackgroundBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="4">
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Status: " 
+                             Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock Text="{Binding StatusMessage}" 
+                             FontWeight="SemiBold"/>
+                </StackPanel>
+            </StatusBarItem>
+
+            <StatusBarItem HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="8" Height="8" 
+                           Fill="{StaticResource SuccessBrush}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,4,0"/>
+                    <TextBlock Text="API Connected" 
+                             Foreground="{StaticResource TextSecondaryBrush}"
+                             FontSize="11"/>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

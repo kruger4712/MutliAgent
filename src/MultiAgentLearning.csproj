@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>45ab8fab-e2c9-46ef-a676-12d6622d7bc8</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Google Generative AI SDK for Gemini -->
+    <PackageReference Include="Mscc.GenerativeAI" Version="2.1.5" />
+    
+    <!-- Configuration and User Secrets support -->
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Exclude UI folder from console project -->
+    <Compile Remove="MultiAgentLearning.UI\**" />
+    <EmbeddedResource Remove="MultiAgentLearning.UI\**" />
+    <None Remove="MultiAgentLearning.UI\**" />
+  </ItemGroup>
+
+</Project>

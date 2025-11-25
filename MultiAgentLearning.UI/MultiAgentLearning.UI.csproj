@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\MultiAgentLearning.csproj" />
+    <ProjectReference Include="..\MultiAgentLearning.csproj" />
   </ItemGroup>
 
   <ItemGroup>
